@@ -47,38 +47,48 @@ export default function ReviewSection({ selectedEmployee, isReviewingAll }: Revi
   useEffect(() => {
   }, [selectedEmployee, isReviewingAll]);
 
-  const generateReview = () => {
+  const generateReview = async () => {
     if (!selectedEmployee) return;
 
-    const newReview: ReviewData = {
-      metrics: {
-        commits: 247,
-        prAcceptance: '94%',
-        reviewTime: '0.8 days'
-      },
-      achievements: [
-        'Led the migration to TypeScript across 3 major services',
-        'Reduced API response time by 40% through caching implementation',
-        'Mentored 2 junior developers in backend development'
-      ],
-      growthAreas: [
-        'Documentation could be more comprehensive',
-        'Consider taking on more architectural planning',
-        'Opportunity to share knowledge through tech talks'
-      ],
-      levels: {
-        'Scope and Impact': 'L4',
-        'Technical Contributions': 'L5',
-        'Expertise': 'L4',
-        'Design & Architecture': 'L4',
-        'Ownership': 'L3'
-      }
-    };
+    try {
+      const response = await fetch('/api/employee-review', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(selectedEmployee)
+      });
 
-    setEmployeeReviews(prev => ({
-      ...prev,
-      [selectedEmployee.id]: newReview
-    }));
+      if (!response.ok) {
+        throw new Error('Failed to generate review');
+      }
+
+      const reviewData = await response.json();
+      
+      const formattedReview: ReviewData = {
+        metrics: {
+          commits: reviewData.metrics.commits,
+          prAcceptance: reviewData.metrics.prAcceptance,
+          reviewTime: reviewData.metrics.reviewTime
+        },
+        achievements: reviewData.achievements,
+        growthAreas: reviewData.growthAreas,
+        levels: {
+          'Scope and Impact': reviewData.levels.Scope_and_Impact,
+          'Technical Contributions': reviewData.levels.Technical_Contributions,
+          'Expertise': reviewData.levels.Expertise,
+          'Design & Architecture': reviewData.levels.Design_and_Architecture,
+          'Ownership': reviewData.levels.Ownership
+        }
+      };
+
+      setEmployeeReviews(prev => ({
+        ...prev,
+        [selectedEmployee.id]: formattedReview
+      }));
+    } catch (error) {
+      console.error('Error generating review:', error);
+    }
   };
 
   const performanceLevels: PerformanceCriteria = {
