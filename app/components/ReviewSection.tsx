@@ -15,6 +15,28 @@ interface ReviewData {
   };
   achievements: string[];
   growthAreas: string[];
+  levels: {
+    'Scope and Impact': 'L3' | 'L4' | 'L5' | 'L6';
+    'Technical Contributions': 'L3' | 'L4' | 'L5' | 'L6';
+    'Expertise': 'L3' | 'L4' | 'L5' | 'L6';
+    'Design & Architecture': 'L3' | 'L4' | 'L5' | 'L6';
+    'Ownership': 'L3' | 'L4' | 'L5' | 'L6';
+  };
+}
+
+interface LevelCriteria {
+  L3: string;
+  L4: string;
+  L5: string;
+  L6: string;
+}
+
+interface PerformanceCriteria {
+  'Scope and Impact': LevelCriteria;
+  'Technical Contributions': LevelCriteria;
+  'Expertise': LevelCriteria;
+  'Design & Architecture': LevelCriteria;
+  'Ownership': LevelCriteria;
 }
 
 export default function ReviewSection({ selectedEmployee, isReviewingAll }: ReviewSectionProps) {
@@ -43,13 +65,53 @@ export default function ReviewSection({ selectedEmployee, isReviewingAll }: Revi
         'Documentation could be more comprehensive',
         'Consider taking on more architectural planning',
         'Opportunity to share knowledge through tech talks'
-      ]
+      ],
+      levels: {
+        'Scope and Impact': 'L4',
+        'Technical Contributions': 'L5',
+        'Expertise': 'L4',
+        'Design & Architecture': 'L4',
+        'Ownership': 'L3'
+      }
     };
 
     setEmployeeReviews(prev => ({
       ...prev,
       [selectedEmployee.id]: newReview
     }));
+  };
+
+  const performanceLevels: PerformanceCriteria = {
+    'Scope and Impact': {
+      L3: 'Team scope, well-defined problems',
+      L4: 'Team/component scope, complex problems',
+      L5: 'Multiple teams, org-wide impact',
+      L6: 'Company-wide, strategic impact'
+    },
+    'Technical Contributions': {
+      L3: 'Implements features independently',
+      L4: 'Drives medium projects',
+      L5: 'Leads large technical initiatives',
+      L6: 'Sets technical direction'
+    },
+    'Expertise': {
+      L3: 'Growing domain knowledge',
+      L4: 'Deep domain expertise',
+      L5: 'Broad technical expertise',
+      L6: 'Industry-recognized expert'
+    },
+    'Design & Architecture': {
+      L3: 'Contributes to design',
+      L4: 'Designs components',
+      L5: 'Architects systems',
+      L6: 'Sets architectural vision'
+    },
+    'Ownership': {
+      L3: 'Owns features',
+      L4: 'Owns components',
+      L5: 'Owns critical systems',
+      L6: 'Owns technical strategy'
+    }
   };
 
   return (
@@ -90,7 +152,12 @@ export default function ReviewSection({ selectedEmployee, isReviewingAll }: Revi
               </div>
               <div>
                 <p className="text-zinc-400">Position</p>
-                <p className="text-white">{selectedEmployee.position}</p>
+                <p className="text-white">
+                  {selectedEmployee.position}
+                  <span className="ml-2 px-2 py-0.5 bg-zinc-700 rounded text-sm">
+                    {selectedEmployee.level}
+                  </span>
+                </p>
               </div>
               <div>
                 <p className="text-zinc-400">GitHub</p>
@@ -117,6 +184,42 @@ export default function ReviewSection({ selectedEmployee, isReviewingAll }: Revi
                 <div className="bg-zinc-800 p-4 rounded-lg">
                   <p className="text-zinc-400 text-sm">Avg Review Time</p>
                   <p className="text-2xl font-bold text-white">{currentReview.metrics.reviewTime}</p>
+                </div>
+              </div>
+
+              <div className="bg-zinc-800 p-4 rounded-lg mt-4">
+                <h4 className="text-white font-medium mb-4">Level Assessment Grid</h4>
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr>
+                        <th className="text-left text-zinc-400 p-2"></th>
+                        <th className="text-left text-zinc-400 p-2">L3</th>
+                        <th className="text-left text-zinc-400 p-2">L4</th>
+                        <th className="text-left text-zinc-400 p-2">L5</th>
+                        <th className="text-left text-zinc-400 p-2">L6</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {Object.entries(performanceLevels).map(([category, levels]) => (
+                        <tr key={category} className="border-t border-zinc-700">
+                          <td className="text-white p-2 font-medium">{category}</td>
+                          {['L3', 'L4', 'L5', 'L6'].map((level) => (
+                            <td 
+                              key={level}
+                              className={`text-zinc-400 p-2 ${
+                                currentReview?.levels[category as keyof typeof currentReview.levels] === level
+                                  ? 'bg-emerald-500/20 text-emerald-400 font-medium rounded'
+                                  : ''
+                              }`}
+                            >
+                              {levels[level as keyof LevelCriteria]}
+                            </td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               </div>
 

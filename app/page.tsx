@@ -1,8 +1,8 @@
 // page.tsx
 'use client'
-import EmployeeList from "@/app/components/EmployeeList";
-import ReviewSection from "./components/ReviewSection";
-import MetricsSection from "./components/MetricsSection";
+import EmployeeList from "@/app/Components/EmployeeList";
+import ReviewSection from "./Components/ReviewSection";
+import MetricsSection from "./Components/MetricsSection";
 import { useState } from "react";
 import { Employee } from "@/Types/types";
 
@@ -31,7 +31,7 @@ export default function Home() {
       const formData = new FormData();
       formData.append('file', file);
       
-      const response = await fetch('/api/pdf-parse', {
+      const response = await fetch('/api/pdf-parser', {
         method: 'POST',
         body: formData,
       });
@@ -41,6 +41,7 @@ export default function Home() {
       }
       
       const { text } = await response.json();
+      console.log('PDF Content:', text);
       setPdfContent(text);
     } catch (error) {
       console.error('Error parsing PDF:', error);

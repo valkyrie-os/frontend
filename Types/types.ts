@@ -3,6 +3,7 @@ export interface Employee {
     name: string;
     position: string;
     github: string;
+    level: string;
     slack: string;
     // Add other employee properties as needed
   } 
