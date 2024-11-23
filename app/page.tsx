@@ -1,8 +1,8 @@
 // page.tsx
 'use client'
-import EmployeeList from "@/app/Components/EmployeeList";
-import ReviewSection from "./Components/ReviewSection";
-import MetricsSection from "./Components/MetricsSection";
+import EmployeeList from "./components/EmployeeList";
+import ReviewSection from "./components/ReviewSection";
+import MetricsSection from "./components/MetricsSection";
 import { useState } from "react";
 import { Employee } from "@/Types/types";
 
